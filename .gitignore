@@ -1,0 +1,4 @@
+
+#kyuko_parse setting files
+kyuko_parse/*.json
+kyuko_parse/*.p12
