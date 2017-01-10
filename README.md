@@ -7,3 +7,4 @@
 結構便利．RaspberryPiを用いて定期的にcronで回して更新させています．  
 カレンダーは以下に公開してあります．  
 (Calendar ID: 56mcl27h89vhjq7bnlb3af3q7c@group.calendar.google.com)  
+(ical: https://calendar.google.com/calendar/ical/56mcl27h89vhjq7bnlb3af3q7c%40group.calendar.google.com/public/basic.ics)  
