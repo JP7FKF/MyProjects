@@ -1,14 +1,14 @@
 # encoding: UTF-8
 module NITS_Kyuko
+  require 'bundler'
+  Bundler.require
   require 'open-uri'
-  require 'nokogiri'
-  require 'google/api_client'
   require 'date'
   require 'yaml'
 
   config = YAML.load_file("settings.yaml")
 
-  url = 'http://hirose.sendai-nct.ac.jp/kyuko/kyuko.cgi'
+  url = 'http://hirose-web.sendai-nct.ac.jp/kyuko/kyuko.cgi'
 
   page = Nokogiri::HTML.parse(open(url), nil, "CP932")
 
