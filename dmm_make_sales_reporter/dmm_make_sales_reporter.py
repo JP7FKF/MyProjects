@@ -21,6 +21,19 @@ DMM_LOGIN_PASSWORD = os.environ['DMM_LOGIN_PASSWORD']
 def main():
   options = Options()
   options.add_argument("--headless")
+  options.add_argument('--no-sandbox')
+  options.add_argument('--disable-gpu')
+  options.add_argument('--disable-gpu-rasterization')
+  options.add_argument("--disable-application-cache")
+  options.add_argument("--disable-infobars")
+  options.add_argument("--hide-scrollbars")
+  options.add_argument("--single-process")
+  options.add_argument("--ignore-certificate-errors")
+  options.add_argument('--disable-desktop-notifications')
+  options.add_argument("--disable-extensions")
+  options.add_argument('--disable-dev-shm-usage')
+  options.add_argument('--enable-plugins')
+  options.add_argument('--renderer-process-limit=3')
 
   driver = webdriver.Chrome(options=options)
   driver.implicitly_wait(10)
@@ -29,9 +42,11 @@ def main():
     driver.get("https://www.dmm.com/my/-/login/")
 
     elem_login_id = driver.find_element_by_id("login_id")
-    elem_login_id.send_keys(DMM_LOGIN_ID)
+    driver.execute_script('document.getElementById("login_id").value="%s";' % DMM_LOGIN_ID)
+    #elem_login_id.send_keys(DMM_LOGIN_ID)
     elem_password = driver.find_element_by_id("password")
-    elem_password.send_keys(DMM_LOGIN_PASSWORD)
+    driver.execute_script('document.getElementById("password").value="%s";' % DMM_LOGIN_PASSWORD)
+    #elem_password.send_keys(DMM_LOGIN_PASSWORD)
     elem_login_button = driver.find_element_by_xpath('//*[@id="loginbutton_script_on"]/span/input')
     elem_login_button.click()
 
