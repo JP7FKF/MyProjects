@@ -10,7 +10,7 @@ import json
 import time
 import traceback
 import re
-import chromedriver_binary
+# import chromedriver_binary # erase commentedout if you use chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -35,7 +35,8 @@ def main():
   options.add_argument('--enable-plugins')
   options.add_argument('--renderer-process-limit=3')
 
-  driver = webdriver.Chrome(options=options)
+  # you should replace drivername with driver you want to use.
+  driver = webdriver.Chrome('chromedriver', options=options)
   driver.implicitly_wait(10)
 
   try:
