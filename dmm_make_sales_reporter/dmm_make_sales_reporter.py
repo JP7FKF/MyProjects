@@ -51,21 +51,31 @@ def main():
     elem_login_button.click()
 
     driver.get("https://make.dmm.com/mypage/")
-    monthly_total_sales = driver.find_element_by_xpath('//*[@id="columnMain"]/div/form/div[3]/ul/li[1]/div/p[3]/span[1]').text
-    monthly_orders = driver.find_element_by_xpath('//*[@id="columnMain"]/div/form/div[3]/ul/li[2]/div/p[2]/span[1]').text
-    orders_diff_a_day = driver.find_element_by_xpath('//*[@id="columnMain"]/div/form/div[3]/ul/li[2]/div/p[3]').text
+
+    monthly_total_sales = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[1]/div/p[3]/span[1]').text
+    monthly_orders = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[2]/div/p[2]/span[1]').text
+    orders_diff_a_day = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[2]/div/p[3]').text
     # monthly_favs = driver.find_element_by_xpath('//*[@id="columnMain"]/div/form/div[3]/ul/li[3]/div/p[2]/span[1]').text
     # favs_diff_a_day = driver.find_element_by_xpath('//*[@id="columnMain"]/div/form/div[3]/ul/li[3]/div/p[3]').text
 
     orders_diff_a_day_int_abs = int(re.sub("\\D", "", orders_diff_a_day))
 
+    #print(monthly_total_sales)
+    #print(monthly_orders)
+    #print(orders_diff_a_day_int_abs)
+
     # if some diff of orders exists:
     if (orders_diff_a_day_int_abs != 0):
       slack_text = f'売り上げが変化しました: {orders_diff_a_day}\n今月の受注数: {monthly_orders}, 今月の売り上げ: {monthly_total_sales}円'
       send_slack(slack_text)
+    else:
+      slack_text = f'売り上げに変化はありません: {orders_diff_a_day}\n今月の受注数: {monthly_orders}, 今月の売り上げ: {monthly_total_sales}円'
+      #send_slack(slack_text)
 
   except:
     traceback.print_exc()
+    slack_text = f'Exception Occurred!'
+    send_slack(slack_text)
   finally:
     driver.quit()
 
