@@ -13,3 +13,8 @@
 DMM.makeのクリエイターズマーケットの売り上げに変化があった場合にslackに通知するくん.  
 cronとかで24時前とかに1日1回まわして使うことを想定しています.  
 DMMのlogin_id，password，slack通知するincoming-webhookのURLを環境変数に入れて使います．
+
+## ip_changes_notifier
+定期的に実行することで自分のGIPに変更があった場合にslack通知するくんです．  
+dotenvを採用しているので.envにslack incoming webhookのendpointを入れて使います．
+
