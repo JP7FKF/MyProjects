@@ -9,6 +9,9 @@ import requests
 import json
 import traceback
 import urllib.request
+from dotenv import load_dotenv
+
+load_dotenv()
 
 SLACK_URL = os.environ['SLACK_URL']
 IPINFO_URL = 'https://ipinfo.io/ip'
