@@ -13,6 +13,9 @@ import re
 # import chromedriver_binary # erase commentedout if you use chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from dotenv import load_dotenv
+
+load_dotenv()
 
 SLACK_URL = os.environ['SLACK_URL']
 DMM_LOGIN_ID = os.environ['DMM_LOGIN_ID']
