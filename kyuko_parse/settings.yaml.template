@@ -1,5 +1,3 @@
 account_setting:
     CALENDAR_ID: "編集するカレンダーID"
     json_path: "jsonファイルへのパスを入れてください"
-    secret_id: "eメールアドレス形式のシークレットアカウントID"
-    secretkey: "jsonファイルを生成した時に出たシークレットキー"
