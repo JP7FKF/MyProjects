@@ -1,7 +1,8 @@
 # encoding: utf-8
 require 'open-uri'
 require 'nokogiri'
-require 'google/api_client'
+require 'google/apis/calendar_v3'
+require 'googleauth'
 require 'date'
 require 'yaml'
 require 'net/http'
@@ -31,8 +32,12 @@ end
 
 # main
 config = YAML.load_file("./settings.yaml")
+CLIENT_SECRET_PATH = config["account_setting"]["json_path"]
+CALENDAR_ID = config["account_setting"]["CALENDAR_ID"]
+APPLICATION_NAME = 'NITS_kyuko_calendar'
+
 url = 'https://www.sendai-nct.ac.jp/sclife/kyuko/ku_hirose'
-page = Nokogiri::HTML.parse(open(url), nil, "utf-8")
+page = Nokogiri::HTML.parse(URI.open(url), nil, "utf-8")
 html = []
 slack_message = ''
 
@@ -57,88 +62,57 @@ summary = html.each_slice(6).to_a
   end
 # end
 
-CALENDAR_ID = config["account_setting"]["CALENDAR_ID"]
-client = Google::APIClient.new(:application_name => 'test')
-
-# 認証
-key = Google::APIClient::KeyUtils.load_from_pkcs12(config["account_setting"]["json_path"], config["account_setting"]["secretkey"])
-client.authorization = Signet::OAuth2::Client.new(
-  token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
-  audience: 'https://accounts.google.com/o/oauth2/token',
-  scope: 'https://www.googleapis.com/auth/calendar',
-  issuer: config["account_setting"]["secret_id"],
-  signing_key: key
-  )
-client.authorization.fetch_access_token!
+#認証
+authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
+    json_key_io: File.open(CLIENT_SECRET_PATH),
+    scope: Google::Apis::CalendarV3::AUTH_CALENDAR)
+authorizer.fetch_access_token!
 
 # google calendar に登録
-cal = client.discovered_api('calendar', 'v3')
+calendar_service = Google::Apis::CalendarV3::CalendarService.new
+calendar_service.client_options.application_name = APPLICATION_NAME
+calendar_service.authorization = authorizer
 
 # 登録されている情報を表示する
 scrape_time = DateTime.now
 time_max = (scrape_time >> 3).iso8601
 time_min = scrape_time.iso8601
-params = {'calendarId' => CALENDAR_ID,
-          'orderBy' => 'startTime',
-          'timeMax' => time_max,
-          'timeMin' => time_min,
-          'singleEvents' => 'True'}
 
-result = client.execute(:api_method => cal.events.list,
-                        :parameters => params)
+result = calendar_service.list_events(CALENDAR_ID,
+          order_by: 'startTime',
+          time_max: time_max,
+          time_min: time_min,
+          single_events: true)
 
 # イベント格納
 events = []
-result.data.items.each do |item|
+result.items.each do |item|
   events << item
 end
 
-# 出力
-# events.each do |event|
-# printf("%s, %s, %s, %s, %s\n",
-#   event.start.date, event.end.date, event.summary, event.description, event.id)
-# end
+## 出力
+#events.each do |event|
+#  printf("%s, %s, %s, %s, %s\n",
+#  event.start.date, event.end.date, event.summary, event.description, event.id)
+#end
 
-# これから3ヶ月先までのイベントを削除する
+## これから3ヶ月先までのイベントを削除する
 events.each do |event|
-  params = {'calendarId' => CALENDAR_ID,
-            'eventId' => event.id}
-  result = client.execute(:api_method => cal.events.delete,
-                          :parameters => params)
-  p result.status
-  if result.status != 204
-    slack_message << "[#{result.status}] #{event.summary}\n"
-  end
+  result = calendar_service.delete_event(CALENDAR_ID, event.id)
 end
 
 # 取得した最新のデータをカレンダーに追加する
-
 summary.each do |detail|
   start_date = detail[1].to_s
   end_date = (Date.parse(detail[1].to_s)+1).to_s
   event_name = "[#{detail[0]}]#{detail[2]} #{detail[3]} #{detail[4]}"
 
-  event = {
-    'summary' => event_name,
-    'start' => {
-      'date' => "#{start_date}",
-    },
-    'end' => {
-      'date' => "#{end_date}",
-    },
-    'description' => "備考: #{detail[6]}\r\n担当: #{detail[5]}\r\n取得日時: #{scrape_time.to_s}",
-  }
-
-  result = client.execute(:api_method => cal.events.insert,
-                          :parameters => {'calendarId' => CALENDAR_ID},
-                          :body => JSON.dump(event),
-                          :headers => {'Content-Type' => 'application/json'})
-
-  p result.status
-  if result.status != 200
-    slack_message << "[#{result.status}] #{event_name}\n"
-  end
+  event = Google::Apis::CalendarV3::Event.new(
+    summary: event_name,
+    description: "備考: #{detail[6]}\r\n担当: #{detail[5]}\r\n取得日時: #{scrape_time.to_s}",
+    start: { date: start_date },
+    end: { date: end_date }
+  )
+  calendar_service.insert_event(CALENDAR_ID, event)
 end
-if slack_message != ''
-  post_slack(slack_message)
-end
+
