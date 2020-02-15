@@ -64,4 +64,8 @@ def main():
     send_slack(slack_text)
 
 if __name__ == "__main__":
-  main()
+  try:
+    main()
+  except:
+    slack_text = f'Exception occurred!'
+    send_slack(slack_text)
