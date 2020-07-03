@@ -41,7 +41,7 @@ page = Nokogiri::HTML.parse(URI.open(url), nil, "utf-8")
 html = []
 slack_message = ''
 
-page.xpath('//*[@id="contents"]//table[@class="table2"]/tbody').each do |elements|
+page.xpath('//*[@id="kuinfo"]/tbody').each do |elements|
   line =  elements.css("tr")
   line.xpath('td').each do |hoge|
     html.push hoge.text
