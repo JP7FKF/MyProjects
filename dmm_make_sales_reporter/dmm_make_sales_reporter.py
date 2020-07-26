@@ -55,6 +55,7 @@ def main():
     elem_login_button.click()
 
     driver.get("https://make.dmm.com/mypage/")
+    driver.get("https://make.dmm.com/mypage/")
 
     monthly_total_sales = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[1]/div/p[3]/span[1]').text
     monthly_orders = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[2]/div/p[2]/span[1]').text
@@ -64,9 +65,9 @@ def main():
 
     orders_diff_a_day_int_abs = int(re.sub("\\D", "", orders_diff_a_day))
 
-    #print(monthly_total_sales)
-    #print(monthly_orders)
-    #print(orders_diff_a_day_int_abs)
+    #print(f'monthly total sales: {monthly_total_sales}')
+    #print(f'monthly orders: {monthly_orders}')
+    #print(f'orders_diff_a_day: {orders_diff_a_day_int_abs}')
 
     # if some diff of orders exists:
     if (orders_diff_a_day_int_abs != 0):
