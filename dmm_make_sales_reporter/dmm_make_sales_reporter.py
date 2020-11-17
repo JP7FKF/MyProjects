@@ -10,9 +10,12 @@ import json
 import time
 import traceback
 import re
-# import chromedriver_binary # erase commentedout if you use chromedriver_binary
+#import chromedriver_binary # erase commentedout if you use chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,11 +42,13 @@ def main():
   options.add_argument('--renderer-process-limit=3')
 
   # you should replace drivername with driver you want to use.
-  driver = webdriver.Chrome('chromedriver', options=options)
+  driver = webdriver.Chrome('chromium.chromedriver', options=options)
   driver.implicitly_wait(10)
 
   try:
     driver.get("https://www.dmm.com/my/-/login/")
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.ID, 'login_id')))
+
 
     elem_login_id = driver.find_element_by_id("login_id")
     driver.execute_script('document.getElementById("login_id").value="%s";' % DMM_LOGIN_ID)
@@ -54,8 +59,9 @@ def main():
     elem_login_button = driver.find_element_by_xpath('//*[@id="loginbutton_script_on"]/span/input')
     elem_login_button.click()
 
+    time.sleep(5)
     driver.get("https://make.dmm.com/mypage/")
-    driver.get("https://make.dmm.com/mypage/")
+    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'dlData__monthly')))
 
     monthly_total_sales = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[1]/div/p[3]/span[1]').text
     monthly_orders = driver.find_element_by_class_name('dlData__monthly').find_element_by_xpath('li[2]/div/p[2]/span[1]').text
