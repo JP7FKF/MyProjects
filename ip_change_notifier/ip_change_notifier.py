@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SLACK_URL = os.environ['SLACK_URL']
-IPINFO_URL = 'https://ipinfo.io/ip'
+IPINFO_URL = 'https://ipinfo.io'
 IPFILE_PATH = 'ipaddress.txt'
 
 def send_slack(slack_text):
@@ -33,9 +33,17 @@ def send_slack(slack_text):
 def main():
   previous_ipaddr = ''
 
-  response = urllib.request.urlopen(IPINFO_URL)
-  html = response.read()
-  current_ipaddr = html.decode('utf-8')
+  try:
+    response = urllib.request.urlopen(IPINFO_URL)
+  except HTTPError as e:
+    print('The server couldn\'t fulfill the request.')
+    print('Error code: ', e.code)
+  except URLError as e:
+    print('We failed to reach a server.')
+    print('Reason: ', e.reason)
+
+  data = json.loads(response.read())
+  current_ipaddr = data["ip"]
 
   try:
     f = open(IPFILE_PATH, mode='r')
@@ -60,7 +68,9 @@ def main():
         f.close()
     except:
       print(traceback.format_exc())
-    slack_text = f'IP Address Changed! : {current_ipaddr}'
+
+    data_str = json.dumps(data, indent=2)
+    slack_text = f'IP Address Changed! : {current_ipaddr} ```{data_str}```'
     send_slack(slack_text)
 
 if __name__ == "__main__":
