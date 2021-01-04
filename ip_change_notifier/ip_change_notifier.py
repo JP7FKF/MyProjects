@@ -19,7 +19,7 @@ IPFILE_PATH = 'ipaddress.txt'
 
 def send_slack(slack_text):
   payload = {
-    "username": "IP Address Change Notificator",
+    "username": "IP Address Change Notifier",
     "icon_emoji": ':rotating_light:',
     "attachments": [{
     "text": slack_text,
