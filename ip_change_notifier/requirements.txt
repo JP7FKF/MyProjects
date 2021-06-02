@@ -1,6 +1,6 @@
 selenium==3.141.0
 chromedriver_binary==79.0.3945.36.0
 requests==2.22.0
-urllib3==1.25.8
+urllib3==1.26.5
 python-dotenv==0.10.5
 
