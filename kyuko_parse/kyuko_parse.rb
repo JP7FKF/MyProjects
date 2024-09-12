@@ -37,7 +37,7 @@ CLIENT_SECRET_PATH = config["account_setting"]["json_path"]
 CALENDAR_ID = config["account_setting"]["CALENDAR_ID"]
 APPLICATION_NAME = 'NITS_kyuko_calendar'
 
-url = 'https://www.sendai-nct.ac.jp/sclife/kyuko/ku_hirose'
+url = 'https://www.sendai-nct.ac.jp/student/kyuko/ku_hirose/'
 page = Nokogiri::HTML.parse(URI.open(url), nil, "utf-8")
 html = []
 slack_message = ''
@@ -116,4 +116,3 @@ summary.each do |detail|
   )
   calendar_service.insert_event(CALENDAR_ID, event)
 end
-
