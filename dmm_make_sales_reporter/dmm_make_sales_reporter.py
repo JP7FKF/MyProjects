@@ -51,15 +51,17 @@ def main():
 
 
     elem_login_id = driver.find_element_by_id("login_id")
-    driver.execute_script('document.getElementById("login_id").value="%s";' % DMM_LOGIN_ID)
-    #elem_login_id.send_keys(DMM_LOGIN_ID)
+    elem_login_id.send_keys(DMM_LOGIN_ID)
+    # driver.execute_script('document.getElementById("login_id").value="%s";' % DMM_LOGIN_ID)
     elem_password = driver.find_element_by_id("password")
-    driver.execute_script('document.getElementById("password").value="%s";' % DMM_LOGIN_PASSWORD)
-    #elem_password.send_keys(DMM_LOGIN_PASSWORD)
-    elem_login_button = driver.find_element_by_xpath('//*[@id="loginbutton_script_on"]/span/input')
-    elem_login_button.click()
+    elem_password.send_keys(DMM_LOGIN_PASSWORD)
+    # driver.execute_script('document.getElementById("password").value="%s";' % DMM_LOGIN_PASSWORD)
+    elem_login_button = driver.find_element_by_xpath('//form/button')
+    elem_login_button.submit()
 
-    time.sleep(5)
+    WebDriverWait(driver, 5).until(EC.url_changes(driver.current_url))
+    # time.sleep(5)
+
     driver.get("https://make.dmm.com/mypage/")
     WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'dlData__monthly')))
 
